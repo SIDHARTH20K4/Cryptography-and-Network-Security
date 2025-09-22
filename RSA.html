@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>RSA Algorithm</title>
+</head>
+<body>
+    <h2>RSA Algorithm Implementation</h2>
+
+    <label>Enter first prime (p):</label>
+    <input type="number" id="p"><br><br>
+
+    <label>Enter second prime (q):</label>
+    <input type="number" id="q"><br><br>
+
+    <label>Enter message to encrypt (number):</label>
+    <input type="number" id="msg"><br><br>
+
+    <button onclick="rsa()">Run RSA</button>
+
+    <h3>Output:</h3>
+    <p id="output"></p>
+
+    <script>
+        function gcd(a, b) {
+            if (b == 0)
+                return a;
+            return gcd(b, a % b);
+        }
+
+        function modInverse(e, phi) {
+            for (let d = 1; d < phi; d++) {
+                if ((d * e) % phi === 1)
+                    return d;
+            }
+            return -1;
+        }
+
+        function rsa() {
+            let p = parseInt(document.getElementById("p").value);
+            let q = parseInt(document.getElementById("q").value);
+            let msg = parseInt(document.getElementById("msg").value);
+
+            let n = p * q;
+            let phi = (p - 1) * (q - 1);
+
+            // Choose e such that 1 < e < phi and gcd(e, phi) == 1
+            let e = 2;
+            while (e < phi) {
+                if (gcd(e, phi) == 1)
+                    break;
+                else
+                    e++;
+            }
+
+            // Find d such that (d * e) % phi == 1
+            let d = modInverse(e, phi);
+
+            // Encryption: c = (msg ^ e) % n
+            let c = Math.pow(msg, e) % n;
+
+            // Decryption: t = (c ^ d) % n
+            let t = Math.pow(c, d) % n;
+
+            let output = `
+                n = ${n}, phi = ${phi} <br>
+                Public Key (e, n): (${e}, ${n}) <br>
+                Private Key (d, n): (${d}, ${n}) <br>
+                Encrypted message (c): ${c} <br>
+                Decrypted message (t): ${t}
+            `;
+
+            document.getElementById("output").innerHTML = output;
+        }
+    </script>
+</body>
+</html>
